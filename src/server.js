@@ -1,4 +1,5 @@
 import http from 'node:http';
+import { handleCreateMonitor } from './routes/monitors.js';
 import { sendJSON } from './utils/respond.js';
 import { Router, notFoundHandler } from './router.js'
 
@@ -10,6 +11,8 @@ const router = new Router();
 router.get('/', (req, res) => {
     sendJSON(res, 200, { message: 'Pulse-Check-API is alive'});
 })
+
+router.post('/monitors', handleCreateMonitor);
 
 const server = http.createServer((req, res) => {
     // req.url can include a query string (e.g. "/monitors?staus=down"),
