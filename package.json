@@ -1,0 +1,25 @@
+{
+  "name": "pulse-check-api",
+  "version": "1.0.0",
+  "description": "Dead Man's Switch API for CritMon device monitoring",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kkanim/Pulse-Check-API.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kkanim/Pulse-Check-API/issues"
+  },
+  "homepage": "https://github.com/kkanim/Pulse-Check-API#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
