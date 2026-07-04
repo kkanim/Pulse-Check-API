@@ -24,8 +24,8 @@ export function createMonitorEntity({id, timeout, alertEmail}) {
         timeout,                   // number, seconds until expiry
         alertEmail,                // string, where alerts would be "sent"
         status: MonitorStatus.ACTIVE,
-        createdAT: now,
-        lastHeartbeatAT: now,
+        createdAt: now,
+        lastHeartbeatAt: now,
         timerHandle: null,        // will hold the setTimeout reference (Phase 5)
     };
 }
@@ -36,6 +36,6 @@ export function createMonitorEntity({id, timeout, alertEmail}) {
  * Timeout object into JSON
 */
 export function toPublicMonitor(monitor) {
-    const {timerHandle, ...publicFields} = monitor;
+    const { timerHandle, ...publicFields } = monitor;
     return publicFields;
 }
