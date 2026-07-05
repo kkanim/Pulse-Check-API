@@ -1,13 +1,7 @@
 import { getMonitor, updateMonitor } from '../store/monitorStore.js';
 import { MonitorStatus } from '../models/monitor.js';
 
-/**
- * Starts a fresh countdown for a monitor. When the timeout elapses
- * without a reset, `onExpire(id)` is invoked.
- * the caller's responsibility (Phase 6 will pass the real alert
- * logic). This keeps the timer engine reusable and easy to reason 
- * about in isolation.
- */
+// Starts a countdown for a monitor; calls onExpire(id) if it runs out.
 export function startTimer(id, onExpire) {
     const monitor = getMonitor(id);
     if (!monitor) return;
@@ -19,11 +13,7 @@ export function startTimer(id, onExpire) {
     updateMonitor(id, {timerHandle: handle});
 }
 
-/**
- * Called on every heartbeat. Clears the existing timer (if any)
- * and starts a brand new one - this IS the "reset the countdown"
- * requirement from the brief.
- */
+// Resets the countdown on heartbeat; also resumes a paused monitor.
 export function resetTimer(id, onExpire) {
     const monitor = getMonitor(id);
     if (!monitor) return;
@@ -40,13 +30,7 @@ export function resetTimer(id, onExpire) {
     startTimer(id, onExpire);
 }
 
-/**
- * Pauses a monitor: clears its active timer and marks it PAUSED.
- * Distinct from clearTimer() below - clearTimer is a low-level
- * "stop the setTimeout" primitive, while pauseTimer is the 
- * business-level action tied to the /pause endpoint (it also
- * update status, which clearTimer deliberately does not).
- */
+//Pauses a monitor: clears its timer and marks it PAUSED.
 export function pauseTimer(id) {
     const monitor = getMonitor(id);
     if (!monitor) return null;
@@ -61,11 +45,7 @@ export function pauseTimer(id) {
     });
 }
 
-/**
- * Stops the countdown entirely without starting a new one.
- * Not used yet - this is what Phase 7 (pause/snooze) will call.
- * Included now so the engine's public API is complete in one place.
- */
+//Stops a monitor's timer without changing its status.
 export function clearTimer(id) {
     const monitor = getMonitor(id);
     if (monitor?.timerHandle) {

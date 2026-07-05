@@ -1,9 +1,4 @@
-/**
- * Validates the payload for POST /monitors.
- * Returns an array of error strings - empty array means valid.
- * Kept as pure functions (no side effect) so they're easy to unit test
- * in isolation from HTTP concerns.
- */
+// Validate a POST /monitors payload; returns an array of error messages (empty = valid).
 export function validateCreateMonitor(body) {
     const errors = [];
 

@@ -32,8 +32,7 @@ export function createMonitorEntity({id, timeout, alertEmail}) {
 
 /**
  * Strips internal-only fields (like timerHandle) before a monitor
- * is sent back in an API response. We never want to leak a Node
- * Timeout object into JSON
+ * is sent back in an API response. 
 */
 export function toPublicMonitor(monitor) {
     const { timerHandle, ...publicFields } = monitor;

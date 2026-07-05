@@ -8,7 +8,7 @@ import { recordAlert } from '../store/alertStore.js';
 import { recordEvent, EventType } from '../store/eventStore.js';
 
 
-
+//Handles POST /monitors - registers a device and starts its countdown.
 export async function handleCreateMonitor(req, res) {
     let body;
     try {
@@ -31,12 +31,7 @@ export async function handleCreateMonitor(req, res) {
         timeout: body.timeout,
         alertEmail: body.alert_email,
     }); 
-
-    // The countdown starts the instant the monitor is registered -
-    // not on the first heartbeat. This matches the brief: "the system
-    // starts a countdown timer for 60 seconds associated with device-123."
     startTimer(monitor.id, onMonitorExpire);
-
     recordEvent(monitor.id, EventType.CREATED, { timeout: monitor.timeout });
 
     return sendJSON(res, 201, {
@@ -45,6 +40,7 @@ export async function handleCreateMonitor(req, res) {
     });
 }
 
+// Handles POST /monitors/:id/heartbeat - resets (and un-pauses) the countdown.
 export async function handleHeartbeat(req, res) {
     const { id } = req.params;
     const monitor = getMonitor(id);
@@ -62,12 +58,7 @@ export async function handleHeartbeat(req, res) {
     });
 }
 
-/**
- * Fires when a monitor's countdown reaches zero without a heartbeat.
- * Satisfies User Story 3: logs the required JSON shape from the brief,
- * marks the monitor "down", and records the alert for the later retrieval
- * via GET /alerts.
- */
+// Fires when a monitor's timer expires: marks it down and logs the alert.
 function onMonitorExpire(id) {
     updateMonitor(id, { status: MonitorStatus.DOWN });
     
@@ -82,6 +73,7 @@ function onMonitorExpire(id) {
     }));
 }
 
+//Hadles POST /monitors/:id/pause - freezes the countdown (bonus "snooze" feature.)
 export async function handlePause(req, res) {
     const { id } = req.params;
     const monitor = getMonitor(id);

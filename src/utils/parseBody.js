@@ -1,10 +1,4 @@
-/**
- * Node's http.IncomingMessage delivers the body as a streamof chunks,
- * not a ready-made object. We have to manually collect the chunks,
- * concatenate them, and parse as JSON ourselves.
- * 
- * Returns a Promise so route handlers can simply `await parseBody(req)`.
- */
+// Reads and parse a JSON request body from a raw Node http request.
 export function parseBody(req) {
     return new Promise((resolve, reject) => {
         let rawData = '';

@@ -8,11 +8,12 @@ import { handleGetHistory } from './routes/history.js';
 const PORT = process.env.PORT || 3000;
 const router = new Router();
 
-
+// Health check
 router.get('/', (req, res) => {
     sendJSON(res, 200, { message: 'Pulse-Check-API is alive'});
 });
 
+//Dead Man's Switch endpoints.
 router.post('/monitors', handleCreateMonitor);
 router.post('/monitors/:id/heartbeat', handleHeartbeat);
 router.get('/alerts', handleGetAlerts);

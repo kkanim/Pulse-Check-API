@@ -3,6 +3,7 @@ import { getMonitor } from '../store/monitorStore.js'
 import { getHistory } from "../store/eventStore.js";
 import { toPublicMonitor } from "../models/monitor.js";
 
+//Handles GET /monitors/:id/history - returns a monitor's full event timeline.
 export function handleGetHistory(req, res) {
     const { id } = req.params;
     const monitor = getMonitor(id);

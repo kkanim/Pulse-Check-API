@@ -1,16 +1,6 @@
 import { sendJSON } from './utils/respond.js';
 
-/**
- * A minimal, dependency-free router for  plain Node.js http servers.
- * 
- * Design notes: 
- * - Routes are stored as an array (not a Map) because match order matters -
- * more specific patterns could otherwise be shadowed by looser ones.
- * - Each registered path is compiled into a RegExp once, at registration
- * time, not every request - matching a live request should be cheap.
- * - Dynamic segments (":id") are captured by name so handlers get a clean
- * req.params.id instead of having to parse the URL themselves.
- */
+//Minimal manual router: matches method + path patterns, supports : params.
 export class  Router {
     constructor() {
         this.routes = [];
@@ -19,9 +9,7 @@ export class  Router {
     _register(method, path, handler) {
         const paramNames = [];
 
-        // Convert "/monitors/:id/heartbeat" into a regex like
-        // /^\/monitors\/([^/]+)\/heartbeat$/ and remember that
-        // capture group #1 corresponds to "id".
+        //Compiles a path pattern into a regex and stores it with its handler.
         const pattern = path
         .split('/')
         .map((segment) => {
@@ -37,20 +25,17 @@ export class  Router {
         this.routes.push({ method, regex, paramNames, handler });
     }
 
+    //Registers a GET route.
     get(path, handler) {
         this._register('GET', path, handler);
     }
 
+    //Registers a POST route.
     post(path, handler) {
         this._register('POST', path, handler);
     }
 
-    /**
-     * Finds a matching route for the given method + pathname,
-     * extracts params from the URL, and invikes the handler.
-     * Returns true if a route matched, false otherwise - so the
-     * caller (server.js) knows whether to fall back to a 404.
-     */
+    // Matches a request against registered rotes and invokes the handler.
     handle(req, res, pathname) {
         for (const route of this.routes) {
             if (route.method !== req.method) continue;
@@ -72,6 +57,7 @@ export class  Router {
     }
 }
 
+//Fallback handler for unmatched routes.
 export function notFoundHandler(req, res) {
     sendJSON(res, 404, {error: 'Not FOund', path: req.url});
 }
