@@ -1,5 +1,5 @@
 import http from 'node:http';
-import { handleCreateMonitor, handleHeartbeat } from './routes/monitors.js';
+import { handleCreateMonitor, handleHeartbeat, handlePause } from './routes/monitors.js';
 import { sendJSON } from './utils/respond.js';
 import { Router, notFoundHandler } from './router.js'
 import { handleGetAlerts } from './routes/alerts.js';
@@ -15,6 +15,7 @@ router.get('/', (req, res) => {
 router.post('/monitors', handleCreateMonitor);
 router.post('/monitors/:id/heartbeat', handleHeartbeat);
 router.get('/alerts', handleGetAlerts);
+router.post('/monitors/:id/pause', handlePause);
 
 const server = http.createServer((req, res) => {
     const { pathname } = new URL(req.url, `http://${req.headers.host}`)
@@ -26,5 +27,5 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, () => {
-    console.log(' 🟢 Pulse-CHeck-API listening on http://localhost:${PORT');
+    console.log(` 🟢 Pulse-Check-API listening on http://localhost:${PORT}`);
 });

@@ -41,6 +41,27 @@ export function resetTimer(id, onExpire) {
 }
 
 /**
+ * Pauses a monitor: clears its active timer and marks it PAUSED.
+ * Distinct from clearTimer() below - clearTimer is a low-level
+ * "stop the setTimeout" primitive, while pauseTimer is the 
+ * business-level action tied to the /pause endpoint (it also
+ * update status, which clearTimer deliberately does not).
+ */
+export function pauseTimer(id) {
+    const monitor = getMonitor(id);
+    if (!monitor) return null;
+
+    if (monitor.timerHandle) {
+        clearTimeout(monitor.timerHandle);
+    }
+
+    return updateMonitor(id, {
+        status: MonitorStatus.PAUSED,
+        timerHandle: null,
+    });
+}
+
+/**
  * Stops the countdown entirely without starting a new one.
  * Not used yet - this is what Phase 7 (pause/snooze) will call.
  * Included now so the engine's public API is complete in one place.

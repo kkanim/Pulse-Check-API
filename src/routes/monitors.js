@@ -3,27 +3,10 @@ import { parseBody } from '../utils/parseBody.js';
 import { validateCreateMonitor } from '../utils/validate.js';
 import { createMonitor, monitorExists, getMonitor, updateMonitor } from '../store/monitorStore.js';
 import { toPublicMonitor, MonitorStatus } from '../models/monitor.js';
-import { startTimer, resetTimer } from '../services/timerEngine.js';
+import { startTimer, resetTimer, pauseTimer } from '../services/timerEngine.js';
 import { recordAlert } from '../store/alertStore.js';
 
-/**
- * Fires when a monitor's countdown reaches zero without a heartbeat.
- * Satisfies User Story 3: logs the required JSON shape from the brief,
- * marks the monitor "down", and records the alert for the later retrieval
- * via GET /alerts.
- */
-function onMonitorExpire(id) {
-    updateMonitor(id, { status: MonitorStatus.DOWN });
-    
-    const alert = recordAlert({ monitorId: id });
 
-    //Exact JSON shape required the brief's acceptance criteria:
-    //{"ALERT": "Device device-123 is down!", "time": <timestamp>}
-    console.log(JSON.stringify({
-        ALERT: alert.message,
-        time: alert.firedAt,
-    }));
-}
 
 export async function handleCreateMonitor(req, res) {
     let body;
@@ -74,5 +57,40 @@ export async function handleHeartbeat(req, res) {
     return sendJSON(res, 200, {
         message: `Heartbeat received for "${id}". Timer reset.`,
         monitor: toPublicMonitor(getMonitor(id)),
+    });
+}
+
+/**
+ * Fires when a monitor's countdown reaches zero without a heartbeat.
+ * Satisfies User Story 3: logs the required JSON shape from the brief,
+ * marks the monitor "down", and records the alert for the later retrieval
+ * via GET /alerts.
+ */
+function onMonitorExpire(id) {
+    updateMonitor(id, { status: MonitorStatus.DOWN });
+    
+    const alert = recordAlert({ monitorId: id });
+
+    //Exact JSON shape required the brief's acceptance criteria:
+    //{"ALERT": "Device device-123 is down!", "time": <timestamp>}
+    console.log(JSON.stringify({
+        ALERT: alert.message,
+        time: alert.firedAt,
+    }));
+}
+
+export async function handlePause(req, res) {
+    const { id } = req.params;
+    const monitor = getMonitor(id);
+
+    if (!monitor) {
+        return sendJSON(res, 404, { error: `Monitor with id "${id}" not found` });
+    }
+
+    const paused = pauseTimer(id);
+
+    return sendJSON(res, 200, {
+        message: `Monitor "${id}" paused. No alerts will fire until the next heartbeat.`,
+        monitor: toPublicMonitor(paused),
     });
 }
