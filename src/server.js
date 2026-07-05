@@ -3,6 +3,7 @@ import { handleCreateMonitor, handleHeartbeat, handlePause } from './routes/moni
 import { sendJSON } from './utils/respond.js';
 import { Router, notFoundHandler } from './router.js'
 import { handleGetAlerts } from './routes/alerts.js';
+import { handleGetHistory } from './routes/history.js';
 
 const PORT = process.env.PORT || 3000;
 const router = new Router();
@@ -16,6 +17,7 @@ router.post('/monitors', handleCreateMonitor);
 router.post('/monitors/:id/heartbeat', handleHeartbeat);
 router.get('/alerts', handleGetAlerts);
 router.post('/monitors/:id/pause', handlePause);
+router.get('/monitors/:id/history', handleGetHistory);
 
 const server = http.createServer((req, res) => {
     const { pathname } = new URL(req.url, `http://${req.headers.host}`)
