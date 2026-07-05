@@ -4,17 +4,25 @@ import { validateCreateMonitor } from '../utils/validate.js';
 import { createMonitor, monitorExists, getMonitor, updateMonitor } from '../store/monitorStore.js';
 import { toPublicMonitor, MonitorStatus } from '../models/monitor.js';
 import { startTimer, resetTimer } from '../services/timerEngine.js';
+import { recordAlert } from '../store/alertStore.js';
 
 /**
- * Temporary expiry handler for Phase 5. Phase 6 will replace the
- * body of this function with the real alert-firing logic (console.log
- * JSON + alerts array + GET /alerts). Kept here, not in the timer
- * engine, because "what happens on expiry" is business logic, not 
- * timer mechanics.
+ * Fires when a monitor's countdown reaches zero without a heartbeat.
+ * Satisfies User Story 3: logs the required JSON shape from the brief,
+ * marks the monitor "down", and records the alert for the later retrieval
+ * via GET /alerts.
  */
 function onMonitorExpire(id) {
     updateMonitor(id, { status: MonitorStatus.DOWN });
-    console.log(` ⚠️  [Phase 6 TODO] Monitor "${id}" expired — alert logic goes here.`)
+    
+    const alert = recordAlert({ monitorId: id });
+
+    //Exact JSON shape required the brief's acceptance criteria:
+    //{"ALERT": "Device device-123 is down!", "time": <timestamp>}
+    console.log(JSON.stringify({
+        ALERT: alert.message,
+        time: alert.firedAt,
+    }));
 }
 
 export async function handleCreateMonitor(req, res) {

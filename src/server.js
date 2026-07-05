@@ -2,6 +2,7 @@ import http from 'node:http';
 import { handleCreateMonitor, handleHeartbeat } from './routes/monitors.js';
 import { sendJSON } from './utils/respond.js';
 import { Router, notFoundHandler } from './router.js'
+import { handleGetAlerts } from './routes/alerts.js';
 
 const PORT = process.env.PORT || 3000;
 const router = new Router();
@@ -13,6 +14,7 @@ router.get('/', (req, res) => {
 
 router.post('/monitors', handleCreateMonitor);
 router.post('/monitors/:id/heartbeat', handleHeartbeat);
+router.get('/alerts', handleGetAlerts);
 
 const server = http.createServer((req, res) => {
     const { pathname } = new URL(req.url, `http://${req.headers.host}`)
